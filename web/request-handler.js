@@ -19,6 +19,7 @@ exports.handleRequest = function (req, res) {
   if (req.method === 'GET') {
     httpHelpers.serveAssets(res, archive.paths.siteAssets + routes[path]);
   } else if (req.method === 'POST') {
-
+    archive.paths.isUrlInList("")
   }
+
 };
