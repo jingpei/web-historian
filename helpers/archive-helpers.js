@@ -43,10 +43,21 @@ exports.isUrlInList = function(url, cb) {
   });
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, cb) {
+  fs.appendFile(this.paths.list, url, 'utf8', cb);
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(url, cb) {
+  var exists = function(){
+    try{
+      fs.access(url);
+      return true;
+    } catch(ex){
+      return false;
+    }
+  }();
+
+  return cb(exists);
 };
 
 exports.downloadUrls = function() {
