@@ -8,21 +8,28 @@ var url = require('url');
 exports.handleRequest = function (req, res) {
   var routes = {
     '/': '/index.html',
-    '/styles.css': '/styles.css',
+    '/styles.css': '/styles.css'
   };
 
   var path = url.parse(req.url).pathname;
 
   if (req.method === 'GET') {
-    httpHelpers.serveAssets(res, archive.paths.siteAssets + routes[path], 200);
-  } else if (req.method === 'POST') {
+    if(routes[path]){
+      httpHelpers.serveAssets(res, archive.paths.siteAssets + routes[path], 200);
+    } else {
+      httpHelpers.serveAssets(res, archive.paths.archivedSites + "/" + path, 200);
+    }
+  } 
+  else if (req.method === 'POST') {
     var urlInput = "";
     
     req.on('data', function(chunk){
       urlInput += chunk;
     })
-    
+  
     req.on('end', function(){
+      urlInput = urlInput.substr(4);
+
       archive.isUrlInList(urlInput, function(inList){
         if(inList){
           archive.isUrlArchived(urlInput, function(exists){
@@ -31,7 +38,7 @@ exports.handleRequest = function (req, res) {
             }
           });
         } else {
-          archive.addUrlToList(urlInput.substr(4));
+          archive.addUrlToList(urlInput);
           httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', 302);
         }
       });
