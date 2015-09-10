@@ -48,24 +48,21 @@ exports.addUrlToList = function(url, cb) {
 };
 
 exports.isUrlArchived = function(url, cb) {
-  var exists = function(){
-    try{
-      fs.access(url);
-      return true;
-    } catch(ex){
-      return false;
+  fs.stat(exports.paths.archivedSites + "/" + url, function(err, stats){
+    if(err){
+      cb(false);
     }
-  }();
-
-  return cb(exists);
+    else if(stats.isFile()){
+      cb(true);
+    }
+  });
 };
 
-exports.downloadUrls = function(urlArray) {
-  _.each(urlArray, function(url){
-    fs.writeFile(exports.paths.archivedSites + "/" + url, '', function(err){
-      httpRequest.get(url, exports.paths.archivedSites + "/" + url, function(err){
-        fs.appendFile('/Users/student/Desktop/2015-08-web-historian/archives/cronLog.txt', '\nDownloading...');
-      });
-    })
-  })
+exports.downloadUrls = function(url) {
+  fs.appendFile('/Users/student/Desktop/2015-08-web-historian/archives/cronLog.txt', '\nFile to download: ' + url);
+
+  fs.writeFile(exports.paths.archivedSites + "/" + url, '', function(err){
+    httpRequest.get(url, exports.paths.archivedSites + "/" + url, function(err){
+    });
+  });
 };

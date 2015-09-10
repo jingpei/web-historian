@@ -32,6 +32,7 @@ exports.handleRequest = function (req, res) {
 
       archive.isUrlInList(urlInput, function(inList){
         if(inList){
+          console.log("it's in the list, now check archives...");
           archive.isUrlArchived(urlInput, function(exists){
             if(exists){
               console.log(archive.paths.archivedSites + "/" + urlInput);
