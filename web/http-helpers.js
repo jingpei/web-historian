@@ -15,7 +15,7 @@ exports.sendResponse = function(res, statusCode, data) {
   res.end(data);
 };
 
-exports.serveAssets = function(res, asset, callback) {
+exports.serveAssets = function(res, asset, statusCode, callback) {
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...),
   // css, or anything that doesn't change often.)
@@ -24,7 +24,7 @@ exports.serveAssets = function(res, asset, callback) {
       exports.sendResponse(res, 404, JSON.stringify(err));
       return;
     } else {
-      exports.sendResponse(res, 200, data)
+      exports.sendResponse(res, statusCode, data)
     }
   })
 };

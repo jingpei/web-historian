@@ -8,13 +8,13 @@ var url = require('url');
 exports.handleRequest = function (req, res) {
   var routes = {
     '/': '/index.html',
-    '/styles.css': '/styles.css'
+    '/styles.css': '/styles.css',
   };
 
   var path = url.parse(req.url).pathname;
 
   if (req.method === 'GET') {
-    httpHelpers.serveAssets(res, archive.paths.siteAssets + routes[path]);
+    httpHelpers.serveAssets(res, archive.paths.siteAssets + routes[path], 200);
   } else if (req.method === 'POST') {
     var urlInput = "";
     
@@ -27,12 +27,12 @@ exports.handleRequest = function (req, res) {
         if(inList){
           archive.isUrlArchived(urlInput, function(exists){
             if(exists){
-              httpHelpers.serveAssets(res, archive.paths.archivedSites + '/' + urlInput);
+              httpHelpers.serveAssets(res, archive.paths.archivedSites + '/' + urlInput, 200);
             }
           });
         } else {
           archive.addUrlToList(urlInput.substr(4));
-          httpHelpers.sendResponse(res, 302, '');
+          httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', 302);
         }
       });
     });
