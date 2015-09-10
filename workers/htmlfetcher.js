@@ -7,15 +7,16 @@ var fs = require('fs');
 var getDownloads = function(){
   fs.appendFile('/Users/student/Desktop/2015-08-web-historian/archives/cronLog.txt', '\nCron job running...');
 
-  archive.readListOfUrls(function(urls) {
+  archive.readListOfUrls()
+  .then(function(urls) {
     _.each(urls, function(url) {
-      archive.isUrlArchived(url, function(exists) {
-        if (!exists) {
-          archive.downloadUrls(url);
+      archive.isUrlArchived(url)
+      .then(function(exists){
+        if(!exists){
+          archive.downloadUrls(url);  
         }
-      });
-    });
-
+      })
+    })
   });
 }
 

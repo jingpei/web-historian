@@ -20,7 +20,7 @@ exports.handleRequest = function (req, res) {
       httpHelpers.serveAssets(res, archive.paths.archivedSites + "/" + path, 200);
     }
   } 
-  else if (req.method === 'POST') {
+  else if (req.method === 'POST' && path === "/") {
     var urlInput = "";
     
     req.on('data', function(chunk){
@@ -30,12 +30,12 @@ exports.handleRequest = function (req, res) {
     req.on('end', function(){
       urlInput = urlInput.substr(4);
 
-      archive.isUrlInList(urlInput, function(inList){
+      archive.isUrlInList(urlInput)
+      .then(function(inList){
         if(inList){
-          console.log("it's in the list, now check archives...");
-          archive.isUrlArchived(urlInput, function(exists){
+          archive.isUrlArchived(urlInput)
+          .then(function(exists){
             if(exists){
-              console.log(archive.paths.archivedSites + "/" + urlInput);
               httpHelpers.serveAssets(res, archive.paths.archivedSites + '/' + urlInput, 200);
             }
           });
@@ -43,8 +43,10 @@ exports.handleRequest = function (req, res) {
           archive.addUrlToList(urlInput);
           httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', 302);
         }
+      })
+      .catch(function(err) {
+        console.log(err);
       });
     });
   }
-
 };

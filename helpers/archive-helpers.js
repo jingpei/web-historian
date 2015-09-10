@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var httpRequest = require('http-request');
+var q = require('q');
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -25,37 +26,52 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(cb) {
+exports.readListOfUrls = function() {
+  var deferred = q.defer();
+
   fs.readFile(exports.paths.list, 'utf8', function(err, data){
     if (err) {
-      console.log("Can't read file!");
-      return;
+      deferred.reject(err);
     } else {
       var urls = data.split('\n');
-      return cb(urls);
+      deferred.resolve(urls);
     }
   });
+
+  return deferred.promise;
 };
 
-exports.isUrlInList = function(url, cb) {
-  exports.readListOfUrls(function(urls) {
-    cb(_.contains(urls, url));
-  });
+exports.isUrlInList = function(url) {
+  var deferred = q.defer();
+
+  exports.readListOfUrls()
+    .then(function(urls){
+      deferred.resolve(_.contains(urls, url));
+    })
+    .catch(function(err){
+      deferred.reject(err);
+    });
+
+  return deferred.promise;
 };
 
 exports.addUrlToList = function(url, cb) {
   fs.appendFile(exports.paths.list, url + '\n', 'utf8', cb);
 };
 
-exports.isUrlArchived = function(url, cb) {
+exports.isUrlArchived = function(url) {
+  var deferred = q.defer();
+
   fs.stat(exports.paths.archivedSites + "/" + url, function(err, stats){
     if(err){
-      cb(false);
+      deferred.resolve(false);
     }
     else if(stats.isFile()){
-      cb(true);
+      deferred.resolve(true);
     }
   });
+
+  return deferred.promise;
 };
 
 exports.downloadUrls = function(url) {
