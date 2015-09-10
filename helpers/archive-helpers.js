@@ -64,7 +64,7 @@ exports.downloadUrls = function(urlArray) {
   _.each(urlArray, function(url){
     fs.writeFile(exports.paths.archivedSites + "/" + url, '', function(err){
       httpRequest.get(url, exports.paths.archivedSites + "/" + url, function(err){
-        console.log("File downloaded");
+        fs.appendFile('/Users/student/Desktop/2015-08-web-historian/archives/cronLog.txt', '\nDownloading...');
       });
     })
   })

@@ -34,6 +34,7 @@ exports.handleRequest = function (req, res) {
         if(inList){
           archive.isUrlArchived(urlInput, function(exists){
             if(exists){
+              console.log(archive.paths.archivedSites + "/" + urlInput);
               httpHelpers.serveAssets(res, archive.paths.archivedSites + '/' + urlInput, 200);
             }
           });
