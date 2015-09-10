@@ -3,10 +3,7 @@ var archive = require('../helpers/archive-helpers');
 var fs = require('fs');
 var httpHelpers = require('./http-helpers');
 var url = require('url');
-// var staticFile = require('node-static');
 // require more modules/folders here!
-
-// var fileServer = new staticFile.Server('./public');
 
 exports.handleRequest = function (req, res) {
   var routes = {
@@ -19,7 +16,26 @@ exports.handleRequest = function (req, res) {
   if (req.method === 'GET') {
     httpHelpers.serveAssets(res, archive.paths.siteAssets + routes[path]);
   } else if (req.method === 'POST') {
-    archive.paths.isUrlInList("")
+    var urlInput = "";
+    
+    req.on('data', function(chunk){
+      urlInput += chunk;
+    })
+    
+    req.on('end', function(){
+      archive.isUrlInList(urlInput, function(inList){
+        if(inList){
+          archive.isUrlArchived(urlInput, function(exists){
+            if(exists){
+              httpHelpers.serveAssets(res, archive.paths.archivedSites + '/' + urlInput);
+            }
+          });
+        } else {
+          archive.addUrlToList(urlInput.substr(4));
+          httpHelpers.sendResponse(res, 302, '');
+        }
+      });
+    });
   }
 
 };

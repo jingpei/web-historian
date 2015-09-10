@@ -26,7 +26,7 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(cb) {
-  fs.readFile(this.paths.list, 'utf8', function(err, data){
+  fs.readFile(exports.paths.list, 'utf8', function(err, data){
     if (err) {
       console.log("Can't read file!");
       return;
@@ -38,13 +38,13 @@ exports.readListOfUrls = function(cb) {
 };
 
 exports.isUrlInList = function(url, cb) {
-  return this.readListOfUrls(function(urls) {
+  return exports.readListOfUrls(function(urls) {
     return cb(_.contains(urls, url));
   });
 };
 
 exports.addUrlToList = function(url, cb) {
-  fs.appendFile(this.paths.list, url, 'utf8', cb);
+  fs.appendFile(exports.paths.list, url + '\n', 'utf8', cb);
 };
 
 exports.isUrlArchived = function(url, cb) {
